@@ -70,7 +70,7 @@ namespace JetpackWarning {
             imageTransform.localScale = Vector2.one;
             imageTransform.anchoredPosition = Vector2.zero;
             imageTransform.localPosition = Vector2.zero;
-            imageTransform.sizeDelta = new Vector2(imageSprite.rect.width/2, imageSprite.rect.height/2);
+            imageTransform.sizeDelta = new Vector2(imageSprite.rect.width / 2, imageSprite.rect.height / 2);
 
             Image image = imageObject.AddComponent<Image>();
             image.sprite = imageSprite;
