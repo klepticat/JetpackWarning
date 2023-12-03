@@ -18,9 +18,11 @@ namespace JetpackWarning {
         [HarmonyPatch(typeof(JetpackItem), "Update")]
         [HarmonyPostfix]
         static void JetpackItem_Update_Postfix(ref JetpackItem __instance, ref Vector3 ___forces, ref RaycastHit ___rayHit) {
-            float fill = ___forces.magnitude - ___rayHit.distance >= 0f ? (___forces.magnitude - ___rayHit.distance) / 50f : 0f;
-            JetpackWarningPlugin.meter.GetComponent<Image>().fillAmount = fill;
-            JetpackWarningPlugin.warning.SetActive((fill * 100f) > 75f);
+            if(__instance.heldByPlayerOnServer) {
+                float fill = ___forces.magnitude - ___rayHit.distance >= 0f ? (___forces.magnitude - ___rayHit.distance) / 50f : 0f;
+                JetpackWarningPlugin.meter.GetComponent<Image>().fillAmount = fill;
+                JetpackWarningPlugin.warning.SetActive((fill * 100f) > 75f);
+            }
         }
     }
 }
