@@ -1,9 +1,7 @@
 ﻿using BepInEx;
 using UnityEngine;
 using HarmonyLib;
-using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using Image = UnityEngine.UI.Image;
 
 namespace JetpackWarning {
