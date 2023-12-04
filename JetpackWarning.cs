@@ -9,6 +9,8 @@ namespace JetpackWarning {
     public class JetpackWarningPlugin : BaseUnityPlugin {
         public static Harmony _harmony;
 
+        public static AudioClip jetpackCriticalBeep;
+
         private void Awake() {
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
             Assets.PopulateAssets();
@@ -17,6 +19,8 @@ namespace JetpackWarning {
             _harmony.PatchAll(typeof(Patches));
 
             SceneManager.sceneLoaded += OnSceneRelayLoaded;
+
+            jetpackCriticalBeep = Assets.MainAssetBundle.LoadAsset<AudioClip>("JetpackCriticalBeep");
         }
 
         public static GameObject meterContainer, meter, frame, warning;
