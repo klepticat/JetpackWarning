@@ -2,60 +2,64 @@
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Reflection;
 
 namespace JetpackWarning {
     class Patches {
+        static private bool playJetpackCritical = false;
+        static private bool playingJetpackCritical = false;
+        static private float currentFill = 0f;
+        static private float fillVelocity = 0f;
+
+        static private float criticalFill = 0.75f;
+        static private float fillTime = 0.1f;
+
         [HarmonyPatch(typeof(PlayerControllerB), "LateUpdate")]
         [HarmonyPostfix]
         static void PlayerControllerB_LateUpdate_Postfix(ref PlayerControllerB __instance) {
-            if(__instance.isHoldingObject && __instance.currentlyHeldObjectServer != null && __instance.currentlyHeldObjectServer is JetpackItem) {
-                JetpackWarningPlugin.meterContainer.SetActive(true);
-            } else {
-                JetpackWarningPlugin.meterContainer.SetActive(false);
-            }
-        }
+            if(__instance.IsOwner && (!__instance.IsServer || __instance.isHostPlayerObject) && __instance.isPlayerControlled && !__instance.isPlayerDead ) {
+                if(__instance.isHoldingObject && __instance.currentlyHeldObjectServer is JetpackItem) {
+                    JetpackItem jetpack = (JetpackItem)__instance.currentlyHeldObjectServer;
+                    JetpackWarningPlugin.meterContainer.SetActive(true);
 
-        static bool playJetpackCritical = false;
-        static bool playingJetpackCritical = false;
-        static float currentFill = 0f;
-        static float fillVelocity = 0f;
-        static float fillTime = 0.1f;
+                    Vector3 forces = (Vector3)typeof(JetpackItem).GetField("forces", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(jetpack);
 
-        [HarmonyPatch(typeof(JetpackItem), "Update")]
-        [HarmonyPostfix]
-        static void JetpackItem_Update_Postfix(ref JetpackItem __instance, ref Vector3 ___forces, ref RaycastHit ___rayHit) {
-            if(__instance.heldByPlayerOnServer) {
-                float fill = ___forces.magnitude - ___rayHit.distance >= 0f ? (___forces.magnitude - ___rayHit.distance) / 50f : 0f;
-                JetpackWarningPlugin.meter.GetComponent<Image>().fillAmount = currentFill;
-                JetpackWarningPlugin.warning.SetActive(currentFill > 0.85f);
+                    // using allPlayersCollideWithMask could cause this to only work properly on some levels?
+                    // ex. this might not work on experimentation because i dont believe theres a volume covering the entire map
+                    RaycastHit hit;
+                    Physics.Raycast(__instance.transform.position, forces, out hit, 25f, StartOfRound.Instance.allPlayersCollideWithMask);
 
-                currentFill = Mathf.SmoothDamp(currentFill, fill, ref fillVelocity, fillTime);
+                    float fill = forces.magnitude - hit.distance >= 0f ? (forces.magnitude - hit.distance) / 50f : 0f;
+                    JetpackWarningPlugin.meter.GetComponent<Image>().fillAmount = currentFill;
+                    JetpackWarningPlugin.warning.SetActive(currentFill > criticalFill);
 
-                playJetpackCritical = currentFill > 0.85f;
+                    currentFill = Mathf.SmoothDamp(currentFill, fill, ref fillVelocity, fillTime);
 
-                Color meterColor = Color.Lerp(new Color(1f, 0.82f, 0.405f, 1f), new Color(0.769f, 0.243f, 0.243f, 1f), currentFill);
+                    playJetpackCritical = currentFill > criticalFill;
 
-                JetpackWarningPlugin.meter.GetComponent<Image>().color = meterColor;
-                JetpackWarningPlugin.frame.GetComponent<Image>().color = meterColor;
-                JetpackWarningPlugin.warning.GetComponent<Image>().color = meterColor;
+                    Color meterColor = Color.Lerp(new Color(1f, 0.82f, 0.405f, 1f), new Color(0.769f, 0.243f, 0.243f, 1f), currentFill);
+
+                    JetpackWarningPlugin.meter.GetComponent<Image>().color = meterColor;
+                    JetpackWarningPlugin.frame.GetComponent<Image>().color = meterColor;
+                    JetpackWarningPlugin.warning.GetComponent<Image>().color = meterColor;
+
+                    if(playJetpackCritical) {
+                        if(!playingJetpackCritical) {
+                            playingJetpackCritical = true;
+                            jetpack.jetpackBeepsAudio.clip = JetpackWarningPlugin.jetpackCriticalBeep;
+                            jetpack.jetpackBeepsAudio.Play();
+                        }
+                    } else playingJetpackCritical = false;
+                } else {
+                    JetpackWarningPlugin.meterContainer.SetActive(false);
+                }
             }
         }
 
         [HarmonyPatch(typeof(JetpackItem), "SetJetpackAudios")]
         [HarmonyPrefix]
         static bool JetpackItem_SetJetpackAudios_Prefix(ref bool ___jetpackActivated, ref AudioSource ___jetpackBeepsAudio) {
-            if(playJetpackCritical) {
-                if(!playingJetpackCritical) {
-                    playingJetpackCritical = true;
-                    ___jetpackBeepsAudio.clip = JetpackWarningPlugin.jetpackCriticalBeep;
-                    ___jetpackBeepsAudio.Play();
-                }
-
-                return false;
-            } else {
-                playingJetpackCritical = false;
-                return true;
-            }
+            return !playingJetpackCritical;
         }
     }
 }
