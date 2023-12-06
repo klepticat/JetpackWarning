@@ -1,6 +1,6 @@
 {
     "name": "JetpackWarning",
-    "version_number": "2.0.0",
+    "version_number": "2.0.1",
     "website_url": "https://github.com/klepticat/JetpackWarning",
     "description": "Adds visual and audio indicators for when your jetpack may explode.",
     "dependencies": []

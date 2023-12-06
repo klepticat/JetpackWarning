@@ -22,3 +22,7 @@
 - Fixed multiplayer issues
 	- Should now work properly in multiplayer, rather than just singleplayer
 	- If you encounter any issues still, add an issue to the github repo or contact @klepti on discord
+
+## 2.0.1
+
+- Fixed README example image to work on thunderstore
