@@ -16,3 +16,9 @@
 ## 1.1.1
 
 - Updated README
+
+## 2.0.0
+
+- Fixed multiplayer issues
+	- Should now work properly in multiplayer, rather than just singleplayer
+	- If you encounter any issues still, add an issue to the github repo or contact @klepti on discord
