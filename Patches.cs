@@ -23,11 +23,25 @@ namespace JetpackWarning {
                     JetpackWarningPlugin.meterContainer.SetActive(true);
 
                     Vector3 forces = (Vector3)typeof(JetpackItem).GetField("forces", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(jetpack);
+                    float jetpackPower = (float)typeof(JetpackItem).GetField("jetpackPower", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(jetpack);
 
                     RaycastHit hit;
                     Physics.Raycast(__instance.transform.position, forces, out hit, 25f, StartOfRound.Instance.allPlayersCollideWithMask);
+                    
+                    float fill_acceleration, fill_real_speed, fill, interpolation;
+                    
+                    // If jetpackPower is over 55, the user is probably flying in circles,
+                    // which is safe until jetpackPower becomes very high and things get out of control.
+                    if(jetpackPower < 80){
+                        interpolation = Mathf.Clamp(jetpackPower / 25f - 2.2f, 0, 1f) / 2f; // jetpackPower 55-80, 0 to 0.5
+                    }
+                    else{
+                        interpolation = 0.5f - Mathf.Clamp(jetpackPower / 20f - 4f, 0, 1f) / 2f; // jetpackPower 80-100, 0.5 to 0
+                    }
+                    fill_real_speed = forces.magnitude - hit.distance >= 0 ? (forces.magnitude- hit.distance) / 50f : 0f;
+                    fill_acceleration = (forces.magnitude/2) + (jetpackPower/2.2f) - hit.distance >= 0 ? ((forces.magnitude/2) + (jetpackPower/2.2f) - hit.distance) / 50f : 0f;
+                    fill = Mathf.Lerp(fill_acceleration, fill_real_speed, interpolation);
 
-                    float fill = forces.magnitude - hit.distance >= 0f ? (forces.magnitude - hit.distance) / 50f : 0f;
                     JetpackWarningPlugin.meter.GetComponent<Image>().fillAmount = currentFill;
                     JetpackWarningPlugin.warning.SetActive(currentFill > criticalFill);
 
@@ -54,12 +68,23 @@ namespace JetpackWarning {
             }
         }
 
-        // the jetpack critical beep doesn't work properly when releasing LMB and then pressing it again while critical
-        // need to look into this
         [HarmonyPatch(typeof(JetpackItem), "SetJetpackAudios")]
         [HarmonyPrefix]
         static bool JetpackItem_SetJetpackAudios_Prefix(ref bool ___jetpackActivated, ref AudioSource ___jetpackBeepsAudio) {
             return !playingJetpackCritical;
+        }
+
+        [HarmonyPatch(typeof(JetpackItem), "JetpackEffect")]
+        [HarmonyPostfix]
+        static void JetpackItem_JetpackEffect_Postfix(ref bool __0, JetpackItem __instance) {
+            if(__0){ // jetpack has been enabled
+                if(playJetpackCritical){
+                    playingJetpackCritical = true;
+                    __instance.jetpackBeepsAudio.clip = JetpackWarningPlugin.jetpackCriticalBeep;
+                    __instance.jetpackBeepsAudio.Play();
+                }
+            }
+            return;
         }
     }
 }
