@@ -68,12 +68,23 @@ namespace JetpackWarning {
             }
         }
 
-        // the jetpack critical beep doesn't work properly when releasing LMB and then pressing it again while critical
-        // need to look into this
         [HarmonyPatch(typeof(JetpackItem), "SetJetpackAudios")]
         [HarmonyPrefix]
         static bool JetpackItem_SetJetpackAudios_Prefix(ref bool ___jetpackActivated, ref AudioSource ___jetpackBeepsAudio) {
             return !playingJetpackCritical;
+        }
+
+        [HarmonyPatch(typeof(JetpackItem), "JetpackEffect")]
+        [HarmonyPostfix]
+        static void JetpackItem_JetpackEffect_Postfix(ref bool __0, JetpackItem __instance) {
+            if(__0){ // jetpack has been enabled
+                if(playJetpackCritical){
+                    playingJetpackCritical = true;
+                    __instance.jetpackBeepsAudio.clip = JetpackWarningPlugin.jetpackCriticalBeep;
+                    __instance.jetpackBeepsAudio.Play();
+                }
+            }
+            return;
         }
     }
 }
