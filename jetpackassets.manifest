@@ -1,0 +1,33 @@
+ManifestFileVersion: 0
+CRC: 504115408
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 28c5f202f63afb3cf619edee09820bce
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 0831e9a4c6e00586aca968f8af15dc80
+  IncrementalBuildHash:
+    serializedVersion: 2
+    Hash: 28c5f202f63afb3cf619edee09820bce
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 74
+  Script: {instanceID: 0}
+- Class: 83
+  Script: {instanceID: 0}
+- Class: 91
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/jetpackMeterWarning.controller
+- Assets/jetpackMeterWarning.png
+- Assets/warningBlink.anim
+- Assets/JetpackCriticalBeep.wav
+- Assets/jetpackMeter.png
+- Assets/jetpackMeterFrame.png
+Dependencies: []

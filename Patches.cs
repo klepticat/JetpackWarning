@@ -17,15 +17,13 @@ namespace JetpackWarning {
         [HarmonyPatch(typeof(PlayerControllerB), "LateUpdate")]
         [HarmonyPostfix]
         static void PlayerControllerB_LateUpdate_Postfix(ref PlayerControllerB __instance) {
-            if(__instance.IsOwner && (!__instance.IsServer || __instance.isHostPlayerObject) && __instance.isPlayerControlled && !__instance.isPlayerDead ) {
+            if(__instance.IsOwner && (!__instance.IsServer || __instance.isHostPlayerObject) && __instance.isPlayerControlled && !__instance.isPlayerDead) {
                 if(__instance.isHoldingObject && __instance.currentlyHeldObjectServer is JetpackItem) {
                     JetpackItem jetpack = (JetpackItem)__instance.currentlyHeldObjectServer;
                     JetpackWarningPlugin.meterContainer.SetActive(true);
 
                     Vector3 forces = (Vector3)typeof(JetpackItem).GetField("forces", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(jetpack);
 
-                    // using allPlayersCollideWithMask could cause this to only work properly on some levels?
-                    // ex. this might not work on experimentation because i dont believe theres a volume covering the entire map
                     RaycastHit hit;
                     Physics.Raycast(__instance.transform.position, forces, out hit, 25f, StartOfRound.Instance.allPlayersCollideWithMask);
 
@@ -56,6 +54,8 @@ namespace JetpackWarning {
             }
         }
 
+        // the jetpack critical beep doesn't work properly when releasing LMB and then pressing it again while critical
+        // need to look into this
         [HarmonyPatch(typeof(JetpackItem), "SetJetpackAudios")]
         [HarmonyPrefix]
         static bool JetpackItem_SetJetpackAudios_Prefix(ref bool ___jetpackActivated, ref AudioSource ___jetpackBeepsAudio) {
