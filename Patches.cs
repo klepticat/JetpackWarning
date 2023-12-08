@@ -8,11 +8,7 @@ namespace JetpackWarning {
     class Patches {
         static private bool playJetpackCritical = false;
         static private bool playingJetpackCritical = false;
-        static private float currentFill = 0f;
-        static private float fillVelocity = 0f;
-
         static private float criticalFill = 0.75f;
-        static private float fillTime = 0.1f;
 
         [HarmonyPatch(typeof(PlayerControllerB), "LateUpdate")]
         [HarmonyPostfix]
@@ -42,14 +38,12 @@ namespace JetpackWarning {
                     fill_acceleration = (forces.magnitude/2) + (jetpackPower/2.25f) >= 0 ? ((forces.magnitude/2) + (jetpackPower/2.25f)) / 50f : 0f;
                     fill = Mathf.Lerp(fill_acceleration, fill_real_speed, interpolation);
 
-                    JetpackWarningPlugin.meter.GetComponent<Image>().fillAmount = currentFill;
-                    JetpackWarningPlugin.warning.SetActive(currentFill > criticalFill);
+                    JetpackWarningPlugin.meter.GetComponent<Image>().fillAmount = fill;
+                    JetpackWarningPlugin.warning.SetActive(fill > criticalFill);
 
-                    currentFill = Mathf.SmoothDamp(currentFill, fill, ref fillVelocity, fillTime);
+                    playJetpackCritical = fill > criticalFill;
 
-                    playJetpackCritical = currentFill > criticalFill;
-
-                    Color meterColor = Color.Lerp(new Color(1f, 0.82f, 0.405f, 1f), new Color(0.769f, 0.243f, 0.243f, 1f), currentFill);
+                    Color meterColor = Color.Lerp(new Color(1f, 0.82f, 0.405f, 1f), new Color(0.769f, 0.243f, 0.243f, 1f), fill);
 
                     JetpackWarningPlugin.meter.GetComponent<Image>().color = meterColor;
                     JetpackWarningPlugin.frame.GetComponent<Image>().color = meterColor;
