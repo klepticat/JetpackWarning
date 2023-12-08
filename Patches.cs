@@ -38,6 +38,9 @@ namespace JetpackWarning {
                     else{
                         interpolation = 0.5f - Mathf.Clamp(jetpackPower / 20f - 4f, 0, 1f) / 2f; // jetpackPower 80-100, 0.5 to 0
                     }
+                    if(forces.magnitude > 47){ // Switch meter to show real speed when near exploding
+                        interpolation = Mathf.Clamp(forces.magnitude / 3f - 15.6666f, 0, 1f); // forces.magnitude 47-50, 0 to 1
+                    }
                     fill_real_speed = forces.magnitude - hit.distance >= 0 ? (forces.magnitude- hit.distance) / 50f : 0f;
                     fill_acceleration = (forces.magnitude/2) + (jetpackPower/2.2f) - hit.distance >= 0 ? ((forces.magnitude/2) + (jetpackPower/2.2f) - hit.distance) / 50f : 0f;
                     fill = Mathf.Lerp(fill_acceleration, fill_real_speed, interpolation);
