@@ -39,7 +39,7 @@ namespace JetpackWarning {
                         interpolation = Mathf.Clamp(forces.magnitude / 3f - 15.6666f, 0, 1f); // forces.magnitude 47-50, 0 to 1
                     }
                     fill_real_speed = forces.magnitude >= 0 ? forces.magnitude / 50f : 0f;
-                    fill_acceleration = (forces.magnitude/2) + (jetpackPower/2.2f) >= 0 ? ((forces.magnitude/2) + (jetpackPower/2.2f)) / 50f : 0f;
+                    fill_acceleration = (forces.magnitude/2) + (jetpackPower/2.25f) >= 0 ? ((forces.magnitude/2) + (jetpackPower/2.25f)) / 50f : 0f;
                     fill = Mathf.Lerp(fill_acceleration, fill_real_speed, interpolation);
 
                     JetpackWarningPlugin.meter.GetComponent<Image>().fillAmount = currentFill;
