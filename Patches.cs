@@ -24,9 +24,6 @@ namespace JetpackWarning {
 
                     Vector3 forces = (Vector3)typeof(JetpackItem).GetField("forces", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(jetpack);
                     float jetpackPower = (float)typeof(JetpackItem).GetField("jetpackPower", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(jetpack);
-
-                    RaycastHit hit;
-                    Physics.Raycast(__instance.transform.position, forces, out hit, 25f, StartOfRound.Instance.allPlayersCollideWithMask);
                     
                     float fill_acceleration, fill_real_speed, fill, interpolation;
                     
@@ -41,8 +38,8 @@ namespace JetpackWarning {
                     if(forces.magnitude > 47){ // Switch meter to show real speed when near exploding
                         interpolation = Mathf.Clamp(forces.magnitude / 3f - 15.6666f, 0, 1f); // forces.magnitude 47-50, 0 to 1
                     }
-                    fill_real_speed = forces.magnitude - hit.distance >= 0 ? (forces.magnitude- hit.distance) / 50f : 0f;
-                    fill_acceleration = (forces.magnitude/2) + (jetpackPower/2.2f) - hit.distance >= 0 ? ((forces.magnitude/2) + (jetpackPower/2.2f) - hit.distance) / 50f : 0f;
+                    fill_real_speed = forces.magnitude >= 0 ? forces.magnitude / 50f : 0f;
+                    fill_acceleration = (forces.magnitude/2) + (jetpackPower/2.2f) >= 0 ? ((forces.magnitude/2) + (jetpackPower/2.2f)) / 50f : 0f;
                     fill = Mathf.Lerp(fill_acceleration, fill_real_speed, interpolation);
 
                     JetpackWarningPlugin.meter.GetComponent<Image>().fillAmount = currentFill;
