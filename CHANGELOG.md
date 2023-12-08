@@ -26,3 +26,11 @@
 ## 2.0.1
 
 - Fixed README example image to work on thunderstore
+
+## 2.1.0
+
+- Updated meter values to provide a clearer danger reading
+	- Should make it easier to keep maintain high speeds without exploding
+- Fixed critical warning sound working improperly
+	- Before when a player first reached critical, the warning sound would play properly. However, toggling the jetpack while in critical would cause the warning sound to end and not reactivate
+	- Now the warning sound will continue to play, even if you toggle the jetpack while in critical
