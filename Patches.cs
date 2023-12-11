@@ -84,12 +84,14 @@ namespace JetpackWarning {
         // Fix bug in game which cause player to take fall damage while flying in air with jetpack
         [HarmonyPatch(typeof(PlayerControllerB), "DamagePlayer")]
         [HarmonyPrefix]
-        static bool PlayerControllerB_DamagePlayer_Prefix(ref PlayerControllerB __instance) {
+        static bool PlayerControllerB_DamagePlayer_Prefix(ref PlayerControllerB __instance, ref CauseOfDeath __3) {
             if(__instance.IsOwner && (!__instance.IsServer || __instance.isHostPlayerObject) && __instance.isPlayerControlled && !__instance.isPlayerDead) {
                 if(__instance.isHoldingObject && __instance.currentlyHeldObjectServer is JetpackItem) {
-                    if(!Physics.CheckSphere(__instance.gameplayCamera.transform.position, 3f, StartOfRound.Instance.collidersAndRoomMaskAndDefault, (QueryTriggerInteraction)1)){
-                        __instance.takingFallDamage = false;
-                        return false;
+                    if(__3 == CauseOfDeath.Gravity){
+                        if(!Physics.CheckSphere(__instance.gameplayCamera.transform.position, 3f, StartOfRound.Instance.collidersAndRoomMaskAndDefault, (QueryTriggerInteraction)1)){
+                            __instance.takingFallDamage = false;
+                            return false;
+                        }
                     }
                 }
             }
