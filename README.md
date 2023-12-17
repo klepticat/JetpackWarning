@@ -1,5 +1,7 @@
 # Jetpack Warning Mod
 
+THIS MOD IS DEPRECATED AND NOW MAINTAINED BY HAMUNII AT https://thunderstore.io/c/lethal-company/p/Hamunii/JetpackWarning/
+
 A Lethal Company mod that adds visual and audio indicators for when your jetpack may explode.
 
 ![warning meter example](https://github.com/klepticat/JetpackWarning/raw/main/assets/example.gif)
