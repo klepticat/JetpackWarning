@@ -1,3 +1,5 @@
+This repo is now maintained at https://github.com/Hamunii/JetpackWarning
+
 # Jetpack Warning Mod
 
 THIS MOD IS DEPRECATED AND NOW MAINTAINED BY HAMUNII AT https://thunderstore.io/c/lethal-company/p/Hamunii/JetpackWarning/
